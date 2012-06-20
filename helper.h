@@ -1,5 +1,6 @@
 #include "table/table.h"
 #include "table/string.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 # define YYSTYPE_IS_DECLARED 1
@@ -41,7 +42,9 @@ int newtemp(int type, int width) {
     __table__[__tableTop__].name = tempstr;
     __table__[__tableTop__].type = type;
     __table__[__tableTop__].width = width;
+    __table__[__tableTop__].addr = __offset__;
     __tableTop__++;
+    __offset__ += width;
     return __tableTop__ - 1;
 }
 
@@ -49,8 +52,15 @@ int enter(char* name, int type, int width) {
     __table__[__tableTop__].name = name;
     __table__[__tableTop__].type = type;
     __table__[__tableTop__].width = width;
+    __table__[__tableTop__].addr = __offset__;
     __tableTop__++;
+    __offset__ += width;
     return __tableTop__ - 1;
+}
+
+int gen(char* op, char* arg1, char* arg2, char* result) {
+    printf("%d: %s %s %s %s\n", op, arg1, arg2, result);
+    return __genNum__++;
 }
 
 char* getName(int i) {
@@ -65,6 +75,10 @@ int getWidth(int i) {
     return __table__[i].width;
 }
 
+int getAddr(int T) {
+    return __table__[i].addr;
+}
+
 int lookup(char* name) {
     int i;
     for (i = 0; i < __tableTop__; i++) {
@@ -76,3 +90,7 @@ int lookup(char* name) {
 }
 
 
+
+//********************************From fly*************************************//
+//add place to yylval or not?(when assign value to place)
+//********************************End******************************************//
