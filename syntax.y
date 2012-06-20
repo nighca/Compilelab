@@ -30,7 +30,9 @@ int cur_width = NIL;
 
 int WIDTH[4] = {-1,4,8,1};
 
-
+int new_dest_to;
+int new_dest_to2;
+int while_begin_from;
 
 
 %}
@@ -123,20 +125,35 @@ sen                                                  {reduction(1,"sens:sen");}
 ;
 
 sen:
-_sen SEMI                                            {reduction(2,"sen:_sen SEMI");}
-| _IF expr _THEN sen                                 {reduction(4,"sen:_IF expr _THEN sen");}
-| _IF expr _THEN sen _ELSE sen                       {reduction(6,"sen:_IF expr _THEN sen _ELSE sen");}
-| _WHILE expr _DO sen	                             {reduction(4,"sen:_WHILE expr _DO sen");}
-| _FOR var ASSIGN expr _TO expr _DO sen	             {reduction(8,"sen:_FOR var ASSIGN expr _TO expr _DO sen");}
-| _BEGIN sens _END	                                 {reduction(3,"sen:_BEGIN sens _END");}
+_sen SEMI                                           {$$.next=$1.next;reduction(2,"sen:_sen SEMI");}
+| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);} 
+    _THEN sen                                       {
+                                                    $$.next=$4.next;
+                                                    setResult(new_dest_to, _itoa($$.next));
+                                                    reduction(4,"sen:_IF expr _THEN sen");}
+| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);} 
+    _THEN sen                                       {new_dest_to2=gen("j",NULL,NULL,NULL);}
+    _ELSE sen                                       {
+                                                    $$.next=$6.next;
+                                                    setResult(new_dest_to, _itoa($4.next));
+                                                    setResult(new_dest_to2, _itoa($$.next));
+                                                    reduction(6,"sen:_IF expr _THEN sen _ELSE sen");}
+| _WHILE                                            {while_begin_from=getQuadTop();}
+    expr                                            {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);}
+    _DO sen	                                        {
+                                                    $$.next=gen("j",NULL,NULL,_itoa(while_begin_from+1))+1;
+                                                    setResult(new_dest_to, _itoa($$.next));
+                                                    reduction(4,"sen:_WHILE expr _DO sen");}
+| _FOR var ASSIGN expr _TO expr _DO sen	            {$$.next=$8.next;reduction(8,"sen:_FOR var ASSIGN expr _TO expr _DO sen");}
+| _BEGIN sens _END                                  {$$.next=$2.next;reduction(3,"sen:_BEGIN sens _END");}
 ;
 
 _sen:
-var ASSIGN expr                                      {reduction(3,"_sen:var ASSIGN expr");}
-| _REPEAT sens _UNTIL expr	                         {reduction(4,"_sen:_REPEAT sens _UNTIL expr");}
-| _READ id	                                         {reduction(2,"_sen:_READ id");}
-| _WRITE expr	                                     {reduction(2,"_sen:_WRITE expr");}
-| func                                               {reduction(1,"_sen:func");}
+var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;
+                                                    reduction(3,"_sen:var ASSIGN expr");}
+| _READ id	                                        {reduction(2,"_sen:_READ id");}
+| _WRITE expr	                                    {reduction(2,"_sen:_WRITE expr");}
+| func                                              {reduction(1,"_sen:func");}
 ;
 
 func:
@@ -167,7 +184,7 @@ _ID                                                 {
                                                     $$.type=$1.type;$$.width=$1.width;
                                                     reduction(1,"var:_ID");
                                                     }
-| array_var                                          {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:array_var");}
+| array_var                                         {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:array_var");}
 ;
 
 array_var:
