@@ -84,8 +84,8 @@ INTEGER|REAL|BOOLEAN        {yylval = *yytext; Moveinto(yytext);return _TYPE;}
 [a-zA-Z][a-zA-Z0-9]*        {yylval = *yytext; Moveinto(yytext);
 							//printf(":ID\n");
 							return _ID;}
-[0-9]*\.[0-9]+              {yylval = *yytext; Moveinto(yytext);return _REAL;}
-[1-9][0-9]*                 {yylval = *yytext; Moveinto(yytext);return POS_INT;}
+[0-9]*\.[0-9]+              {yylval.name = *yytext; Moveinto(yytext);return _REAL;}
+[1-9][0-9]*                 {yylval.name = *yytext; Moveinto(yytext);return POS_INT;}
 0                           {yylval = *yytext; Moveinto(yytext);return *yytext;}
 [()\[\]]                        {yylval = *yytext; Moveinto(yytext);return *yytext;}
 
