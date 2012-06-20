@@ -1,0 +1,6 @@
+PROGRAM simplest;
+BEGIN
+
+    a := 1 + 1;
+    
+END
