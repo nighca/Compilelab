@@ -8,6 +8,7 @@ typedef struct YYSTYPE {
     char* name;
     int type;
     int width;
+    int next;
 };
 
 // ============type=======================
@@ -90,7 +91,3 @@ int lookup(char* name) {
 }
 
 
-
-//********************************From fly*************************************//
-//add place to yylval or not?(when assign value to place)
-//********************************End******************************************//
