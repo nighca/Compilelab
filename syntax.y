@@ -151,7 +151,7 @@ _sen SEMI                                           {$$.next=$1.next;reduction(2
 _sen:
 var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;
                                                     reduction(3,"_sen:var ASSIGN expr");}
-| _READ id	                                        {reduction(2,"_sen:_READ id");}
+| _READ _ID	                                        {reduction(2,"_sen:_READ _ID");}
 | _WRITE expr	                                    {reduction(2,"_sen:_WRITE expr");}
 | func                                              {reduction(1,"_sen:func");}
 ;
