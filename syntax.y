@@ -24,6 +24,14 @@ int pushed = 0;
 int top=0;
 int num=0;
 
+char *cur_name = NULL;
+int cur_type = NIL;
+int cur_width = NIL;
+
+int WIDTH[4] = {-1,4,8,1};
+
+
+
 
 %}
 
@@ -34,43 +42,79 @@ int num=0;
 %%
  
 program:
-_PROGRAM _ID SEMI expl _BEGIN sens _END              { reduction(7,"program:_PROGRAM _ID SEMI expl _BEGIN sens _END"); }
-|_PROGRAM _ID SEMI _BEGIN sens _END                  { reduction(7,"program:_PROGRAM _ID SEMI _BEGIN sens _END"); }
+_PROGRAM _ID SEMI expl _BEGIN sens _END             {reduction(7,"program:_PROGRAM _ID SEMI expl _BEGIN sens _END"); }
+|_PROGRAM _ID SEMI _BEGIN sens _END                 {reduction(7,"program:_PROGRAM _ID SEMI _BEGIN sens _END"); }
 ;
 
 expl: 
-_CONST def SEMI                                      {reduction(3,"expl:_CONST def SEMI");}
-| var_expl_sens                                      {reduction(1,"expl:var_expl_sens");}
-| func_expl                                          {reduction(1,"expl:func_expl");}
-| expl expl                                          {reduction(2,"expl:expl expl");}
+_CONST def SEMI                                     {reduction(3,"expl:_CONST def SEMI");}
+| var_expl_sens                                     {reduction(1,"expl:var_expl_sens");}
+| func_expl                                         {reduction(1,"expl:func_expl");}
+| expl expl                                         {reduction(2,"expl:expl expl");}
 ;
 
 def:
-_ID C_ASSIGN const                                   {reduction(3,"def:_ID C_ASSIGN const ");}
-| _ID C_ASSIGN const COMMA def                       {reduction(5,"def:_ID C_ASSIGN const COMMA def ");}
+_ID C_ASSIGN const                                  {
+                                                    cur_type=$3.type;cur_width=$3.width;cur_name=$1.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    gen("=",$3.name,NULL,$1.name);
+                                                    reduction(3,"def:_ID C_ASSIGN const ");
+                                                    }
+| _ID C_ASSIGN const COMMA def                      {
+                                                    cur_type=$3.type;cur_width=$3.width;cur_name=$1.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    gen("=",$3.name,NULL,$1.name);
+                                                    reduction(5,"def:_ID C_ASSIGN const COMMA def ");
+                                                    }
 ;
 
 var_expl_sens:
-var_expl_sen                                         {reduction(1,"var_expl_sens:var_expl_sen");}
-| var_expl_sen var_expl_sens                         {reduction(2,"var_expl_sens:var_expl_sen var_expl_sens");}
+var_expl_sen                                        {reduction(1,"var_expl_sens:var_expl_sen");}
+| var_expl_sen var_expl_sens                        {reduction(2,"var_expl_sens:var_expl_sen var_expl_sens");}
 ;
 
 var_expl_sen:
-var_expl SEMI                                        {reduction(2,"var_expl_sen:var_expl SEMI  ");}
+var_expl SEMI                                       {reduction(2,"var_expl_sen:var_expl SEMI  ");}
 ;
 
 var_expl:
-_TYPE COLON ids                                      {reduction(3,"var_expl:_TYPE COLON ids ");}
-| _TYPE COLON array_expl                             {reduction(3,"var_expl:_TYPE COLON array_expl");}
+_TYPE COLON _ID                                     {
+                                                    $$.type=$1.type;$$.width=$1.width;
+                                                    cur_type=$1.type;cur_width=$1.width;cur_name=$3.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    reduction(3,"var_expl:_TYPE COLON _ID ");
+                                                    }
+
+| _TYPE COLON array_expl                            {
+                                                    $$.type=$1.type;$$.width=$1.width;
+                                                    cur_type=$1.type+10;cur_width=$1.width*$3.width;cur_name=$3.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    reduction(3,"var_expl:_TYPE COLON array_expl");
+                                                    }
+| var_expl COMMA _ID                                {
+                                                    $$.type=$1.type;$$.width=$1.width;
+                                                    cur_type=$1.type;cur_width=$1.width;cur_name=$3.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    reduction(3,"var_expl:var_expl COMMA _ID");
+                                                    }
+| var_expl COMMA array_expl                         {
+                                                    $$.type=$1.type;$$.width=$1.width;
+                                                    cur_type=$1.type+10;cur_width=$1.width*$3.width;cur_name=$3.name;
+                                                    enter(cur_name,cur_type,cur_width);
+                                                    reduction(3,"var_expl:var_expl COMMA array_expl");
+                                                    }
 ;
 
 func_expl:
-_FUNC _ID _BEGIN sens _END                           {reduction(5,"func_expl:_FUNC _ID _BEGIN sens _END");}
+_FUNC _ID _BEGIN sens _END                          {reduction(5,"func_expl:_FUNC _ID _BEGIN sens _END");}
 ;
 
 array_expl:
-_ARRAY _ID '[' di_expl ']'                           {reduction(5,"array_expl:_ARRAY _ID '[' di_expl ']'");}
-| _ARRAY _ID '[' di_expl ']' COMMA array_expl        {reduction(7,"array_expl:_ARRAY _ID '[' di_expl ']' COMMA array_expl");}
+_ID '[' POS_INT ']'                                 {
+                                                    $$.width=atoi($3.name);//the num of array, will multiply the width of type when added to var_expl
+                                                    $$.name=$1.name;$$.type=NIL;//Unknown yet
+                                                    reduction(4,"array_expl:_ID '[' POS_INT ']'");
+                                                    }
 ;
 
 sens:
@@ -90,8 +134,8 @@ _sen SEMI                                            {reduction(2,"sen:_sen SEMI
 _sen:
 var ASSIGN expr                                      {reduction(3,"_sen:var ASSIGN expr");}
 | _REPEAT sens _UNTIL expr	                         {reduction(4,"_sen:_REPEAT sens _UNTIL expr");}
-| _READ ids	                                         {reduction(2,"_sen:_READ ids");}
-| _WRITE exprs	                                     {reduction(2,"_sen:_WRITE exprs");}
+| _READ id	                                         {reduction(2,"_sen:_READ id");}
+| _WRITE expr	                                     {reduction(2,"_sen:_WRITE expr");}
 | func                                               {reduction(1,"_sen:func");}
 ;
 
@@ -105,36 +149,47 @@ expr                                                 {reduction(1,"exprs:expr");
 ;
 
 expr:
-const                                                {reduction(1,"expr:const");}
-| var                                                {reduction(1,"expr:var");}
-| expr op expr                                       {reduction(3,"expr:expr op expr");}
-| '(' expr ')'                                       {reduction(3,"expr:'(' expr ')'");}
-;
-
-di_expl:
-POS_INT                                              {reduction(1,"di_expl:POS_INT");}
-| POS_INT COMMA di_expl                              {reduction(3,"di_expl:POS_INT COMMA di_expl");}
+const                                               {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:const");}
+| var                                               {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:var");}
+| expr op expr                                      {reduction(3,"expr:expr op expr");}
+| '(' expr ')'                                      {reduction(3,"expr:'(' expr ')'");}
 ;
 
 var:
-_ID                                                  {$$.name=$1.name;$$.type=$1.type;reduction(1,"var:_ID");}
-| array_var                                          {reduction(1,"var:array_expl");}
+_ID                                                  {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:_ID");}
+| array_var                                          {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:array_var");}
 ;
 
 array_var:
-_ID '[' expr ']'                                     {reduction(4,"array_var:_ID [ expr ]");}
+_ID '[' expr ']'                                    {
+                                                    cur_type=getType(lookup($1.name))-10;
+                                                    cur_width=WIDTH[cur_type];
+                                                    int T3=newtemp(cur_type,cur_width);
+                                                    cur_name=getName(T3);
+                                                    $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
+
+                                                    if($3.type!=__INTEGER__){yyerror("type of array num should be int!");}
+                                                    
+                                                    int T1=newtemp($3.type,$3.width);
+                                                    gen("*",$3.name,"4",getName(T1));
+                                                    int array_begin=getPlace(lookup($1.name));
+                                                    char *temp = (char *)malloc(10 * sizeof(char));
+                                                    itoa(array_begin, temp, 10);
+                                                    int T2=newtemp(__INTEGER__,WIDTH[__INTEGER__]);
+                                                    
+                                                    gen(":=", temp, NULL, getName(T2));
+                                                    gen("=[]", mystrcat(mystrcat(getName[T2],"["),mystrcat(getName(T1),"]")),NULL,cur_name);
+                                                    
+                                                    reduction(4,"array_var:_ID [ expr ]");
+                                                    }
 ;
 
-ids:
-_ID                                                  {reduction(1,"ids:_ID");}
-| _ID COMMA ids                                      {reduction(3,"ids:_ID COMMA ids");}
-;
 
 const:
-int                                                  {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:int");}
-| _REAL                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_REAL");}
-| _TRUE                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_TRUE");}
-| _FALSE                                             {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_FALSE");}
+int                                                  {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"const:int");}
+| _REAL                                              {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"const:_REAL");}
+| _TRUE                                              {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"const:_TRUE");}
+| _FALSE                                             {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"const:_FALSE");}
 ;
 
 op:
@@ -166,9 +221,9 @@ LT                                                   {$$.name=$1.name;reduction(
 ;
 
 int:
-POS_INT                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"int:POS_INT");}
-| '0'                                                {$$.name=$1.name;$$.type=$1.type;reduction(1,"int:0");}
-| MI POS_INT                                         {$$.name=strcat("-",$1.name);$$.type=$1.type;reduction(2,"int:MI POS_INT");}
+POS_INT                                              {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"int:POS_INT");}
+| '0'                                                {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"int:0");}
+| MI POS_INT                                         {$$.name=mystrcat("-",$1.name);$$.type=$1.type;$$.width=$1.width;reduction(2,"int:MI POS_INT");}
 ;
 
 %%
