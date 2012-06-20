@@ -5,12 +5,12 @@
 #include <stdlib.h>
 
 # define YYSTYPE_IS_DECLARED 1
-typedef struct YYSTYPE {
+typedef struct {
     char* name;
     int type;
     int width;
     int next;
-};
+} YYSTYPE;
 
 // ============type=======================
 #define __INTEGER__ 1
