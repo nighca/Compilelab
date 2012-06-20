@@ -3,17 +3,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "syntax.tab.h"
+#include "helper.h"
 
 void yyerror(char *);
 void Moveinto(char *);
 void push();
 void pop();
 
+extern YYSTYPE yylval;
+
 extern char *readed[100];
 extern char *cur;
 extern char *stack[2][20];
 extern int num;
 extern int pushed;
+
+extern int WIDTH[4];
 
 %}
 
@@ -23,8 +28,8 @@ PROGRAM                     {Moveinto(yytext);return _PROGRAM;}
 BEGIN                       {Moveinto(yytext);return _BEGIN;}
 END                         {Moveinto(yytext);return _END;}
 CONST                       {Moveinto(yytext);return _CONST;}
-TRUE                        {Moveinto(yytext);return _TRUE;}
-FALSE                       {Moveinto(yytext);return _FALSE;}
+TRUE                        {yylval.name = *yytext; yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TRUE;}
+FALSE                       {yylval.name = *yytext; yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _FALSE;}
 ARRAY                       {Moveinto(yytext);return _ARRAY;}
 IF                          {Moveinto(yytext);return _IF;}
 THEN                        {Moveinto(yytext);return _THEN;}
@@ -79,14 +84,14 @@ NOT                         {Moveinto(yytext);return NOT;}
 \>\=                          {Moveinto(yytext);return GE;}
 [>]                           {Moveinto(yytext);return GT;}
 
-INTEGER|REAL|BOOLEAN        {yylval = *yytext; Moveinto(yytext);return _TYPE;}
-[a-zA-Z][a-zA-Z0-9]*        {yylval = *yytext; Moveinto(yytext);
-							//printf(":ID\n");
-							return _ID;}
-[0-9]*\.[0-9]+              {yylval = *yytext; Moveinto(yytext);return _REAL;}
-[1-9][0-9]*                 {yylval = *yytext; Moveinto(yytext);return POS_INT;}
-0                           {yylval = *yytext; Moveinto(yytext);return *yytext;}
-[()\[\]]                        {yylval = *yytext; Moveinto(yytext);return *yytext;}
+INTEGER                     {yylval.name = *yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return _TYPE;}
+REAL                        {yylval.name = *yytext;yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _TYPE;}
+BOOLEAN                     {yylval.name = *yytext;yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TYPE;}
+[a-zA-Z][a-zA-Z0-9]*        {yylval.name = *yytext; Moveinto(yytext);return _ID;}
+[0-9]*\.[0-9]+              {yylval.name = *yytext;yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _REAL;}
+[1-9][0-9]*                 {yylval.name = *yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return POS_INT;}
+0                           {yylval.name = *yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return *yytext;}
+[()\[\]]                        {yylval = *yytext;Moveinto(yytext);return *yytext;}
 
 
 [ \t\n]                    {				}
