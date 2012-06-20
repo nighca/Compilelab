@@ -1,10 +1,10 @@
 
-typedef struct TABLETYPE {
+typedef struct {
     int addr;
     char* name;
     int type;
     int width;
-};
+} TABLETYPE;
 
 TABLETYPE __table__[1000];
 int __tableTop__ = 0;
