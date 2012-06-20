@@ -10,6 +10,8 @@ void Moveinto(char *);
 void push();
 void pop();
 
+extern YYSTYPE yylval;
+
 extern char *readed[100];
 extern char *cur;
 extern char *stack[2][20];
