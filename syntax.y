@@ -117,7 +117,7 @@ POS_INT                                              {reduction(1,"di_expl:POS_I
 ;
 
 var:
-_ID                                                  {reduction(1,"var:_ID");}
+_ID                                                  {$$.name=$1.name;$$.type=$1.type;reduction(1,"var:_ID");}
 | array_var                                          {reduction(1,"var:array_expl");}
 ;
 
@@ -131,44 +131,44 @@ _ID                                                  {reduction(1,"ids:_ID");}
 ;
 
 const:
-int                                                  {reduction(1,"const:int");}
-| _REAL                                              {reduction(1,"const:_REAL");}
-| _TRUE                                              {reduction(1,"const:_TRUE");}
-| _FALSE                                             {reduction(1,"const:_FALSE");}
+int                                                  {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:int");}
+| _REAL                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_REAL");}
+| _TRUE                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_TRUE");}
+| _FALSE                                             {$$.name=$1.name;$$.type=$1.type;reduction(1,"const:_FALSE");}
 ;
 
 op:
-m_op                                                 {reduction(1,"op:m_op");}
-| l_op                                               {reduction(1,"op:l_op");}
-| r_op                                               {reduction(1,"op:r_op");}
+m_op                                                 {$$.name=$1.name;reduction(1,"op:m_op");}
+| l_op                                               {$$.name=$1.name;reduction(1,"op:l_op");}
+| r_op                                               {$$.name=$1.name;reduction(1,"op:r_op");}
 ;
 
 m_op:
-PL                                                   {reduction(1,"m_op:PL");}
-| MI                                                 {reduction(1,"m_op:MI");}
-| MU                                                 {reduction(1,"m_op:MU");}
-| DI                                                 {reduction(1,"m_op:DI");}
+PL                                                   {$$.name=$1.name;reduction(1,"m_op:PL");}
+| MI                                                 {$$.name=$1.name;reduction(1,"m_op:MI");}
+| MU                                                 {$$.name=$1.name;reduction(1,"m_op:MU");}
+| DI                                                 {$$.name=$1.name;reduction(1,"m_op:DI");}
 ;
 
 l_op:
-AND                                                  {reduction(1,"l_op:AND");}
-| OR                                                 {reduction(1,"l_op:OR");}
-| NOT                                                {reduction(1,"l_op:NOT");}
+AND                                                  {$$.name=$1.name;reduction(1,"l_op:AND");}
+| OR                                                 {$$.name=$1.name;reduction(1,"l_op:OR");}
+| NOT                                                {$$.name=$1.name;reduction(1,"l_op:NOT");}
 ;
 
 r_op:
-LT                                                   {reduction(1,"r_op:LT");}
-| LE                                                 {reduction(1,"r_op:LE");}
-| EQ                                                 {reduction(1,"r_op:EQ");}
-| LG                                                 {reduction(1,"r_op:LG");}
-| GE                                                 {reduction(1,"r_op:GE");}
-| GT                                                 {reduction(1,"r_op:GT");}
+LT                                                   {$$.name=$1.name;reduction(1,"r_op:LT");}
+| LE                                                 {$$.name=$1.name;reduction(1,"r_op:LE");}
+| EQ                                                 {$$.name=$1.name;reduction(1,"r_op:EQ");}
+| LG                                                 {$$.name=$1.name;reduction(1,"r_op:LG");}
+| GE                                                 {$$.name=$1.name;reduction(1,"r_op:GE");}
+| GT                                                 {$$.name=$1.name;reduction(1,"r_op:GT");}
 ;
 
 int:
-POS_INT                                              {reduction(1,"int:POS_INT");}
-| '0'                                                {reduction(1,"int:0");}
-| MI POS_INT                                         {reduction(2,"int:MI POS_INT");}
+POS_INT                                              {$$.name=$1.name;$$.type=$1.type;reduction(1,"int:POS_INT");}
+| '0'                                                {$$.name=$1.name;$$.type=$1.type;reduction(1,"int:0");}
+| MI POS_INT                                         {$$.name=strcat("-",$1.name);$$.type=$1.type;reduction(2,"int:MI POS_INT");}
 ;
 
 %%
