@@ -107,6 +107,10 @@ void setResult(int n, char* newResult) {
     __quad__[n].result = newResult;
 }
 
+int getQuadTop() {
+    return __quadTop__ - 1;
+}
+
 // ========================================================
 
 void _init() {
