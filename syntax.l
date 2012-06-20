@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "syntax.tab.h"
+#include "helper.h"
 
 void yyerror(char *);
 void Moveinto(char *);
