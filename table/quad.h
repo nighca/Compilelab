@@ -1,4 +1,3 @@
-
 typedef struct {
     char* op;
     char* arg1;
@@ -7,6 +6,6 @@ typedef struct {
 } QUADTYPE;
 
 QUADTYPE __quad__[1000];
-int __quadTop__ = 0;
+static int __quadTop__ = 0;
 
-FILE __file__;
+FILE *__file__;

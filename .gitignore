@@ -2,6 +2,7 @@ compiler
 lex.yy.c
 *.tab.c
 *.tab.h
+中间代码.txt
 
 
 
