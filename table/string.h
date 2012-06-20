@@ -9,7 +9,7 @@
 
 
 
-bool _strcmp(const char* str1, const char* str2) {
+static bool _strcmp(const char* str1, const char* str2) {
     int i;
     for (i = 0; ; i++) {
         if (str1[i] != str2[i])
@@ -20,7 +20,7 @@ bool _strcmp(const char* str1, const char* str2) {
     }
 }
 
-char* _strcat(const char *s1, const char *s2) {
+static char* _strcat(const char *s1, const char *s2) {
     int len1 = strlen(s1);
     int len2 = strlen(s2);
 
@@ -38,7 +38,7 @@ char* _strcat(const char *s1, const char *s2) {
 }
 
 
-char* _itoa(int n) {
+static char* _itoa(int n) {
     char *tempstr = (char *)malloc(10 * sizeof(char));
     int i;
     for (i = 0; ; i++) {

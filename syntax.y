@@ -42,13 +42,13 @@ int while_begin_from;
 %left MU DI
 %right NOT
 %%
- 
+
 program:
 _PROGRAM _ID SEMI expl _BEGIN sens _END             {reduction(7,"program:_PROGRAM _ID SEMI expl _BEGIN sens _END"); }
 |_PROGRAM _ID SEMI _BEGIN sens _END                 {reduction(7,"program:_PROGRAM _ID SEMI _BEGIN sens _END"); }
 ;
 
-expl: 
+expl:
 _CONST def SEMI                                     {reduction(3,"expl:_CONST def SEMI");}
 | var_expl_sens                                     {reduction(1,"expl:var_expl_sens");}
 | func_expl                                         {reduction(1,"expl:func_expl");}
@@ -126,12 +126,12 @@ sen                                                  {reduction(1,"sens:sen");}
 
 sen:
 _sen SEMI                                           {$$.next=$1.next;reduction(2,"sen:_sen SEMI");}
-| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);} 
+| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);}
     _THEN sen                                       {
                                                     $$.next=$4.next;
                                                     setResult(new_dest_to, _itoa($$.next));
                                                     reduction(4,"sen:_IF expr _THEN sen");}
-| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);} 
+| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);}
     _THEN sen                                       {new_dest_to2=gen("j",NULL,NULL,NULL);}
     _ELSE sen                                       {
                                                     $$.next=$6.next;
@@ -169,8 +169,8 @@ const                                               {$$.name=$1.name;$$.type=$1.
                                                     cur_name=getName(T);
                                                     $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
 
-                                                    gen(op.name, $1.name, $3.name, cur_name);
-                                                    
+                                                    gen($2.name, $1.name, $3.name, cur_name);
+
                                                     reduction(3,"expr:expr op expr");
                                                     }
 | '(' expr ')'                                      {$$.name=$2.name;$$.type=$2.type;$$.width=$2.width;reduction(3,"expr:'(' expr ')'");}
@@ -196,17 +196,15 @@ _ID '[' expr ']'                                    {
                                                     $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
 
                                                     if($3.type!=__INTEGER__){yyerror("type of array num should be int!");}
-                                                    
+
                                                     int T1=newtemp($3.type,$3.width);
                                                     gen("*",$3.name,"4",getName(T1));
                                                     int array_begin=getAddr(lookup($1.name));
-                                                    char *temp = (char *)malloc(10 * sizeof(char));
-                                                    itoa(array_begin, temp, 10);
                                                     int T2=newtemp(__INTEGER__,WIDTH[__INTEGER__]);
-                                                    
-                                                    gen(":=", temp, NULL, getName(T2));
-                                                    gen("=[]", _strcat(_strcat(getName[T2],"["),_strcat(getName(T1),"]")),NULL,cur_name);
-                                                    
+
+                                                    gen(":=", _itoa(array_begin), NULL, getName(T2));
+                                                    gen("=[]", _strcat(_strcat(getName(T2),"["),_strcat(getName(T1),"]")),NULL,cur_name);
+
                                                     reduction(4,"array_var:_ID [ expr ]");
                                                     }
 ;
@@ -276,7 +274,7 @@ void reduction(int arg_num, char *s) {
     printf("----> reduction %s\n", s);
 
     int i;
-    for(i=0; i<arg_num; i++) 
+    for(i=0; i<arg_num; i++)
         pop();
 
     char *new_p = state[state_num];
@@ -307,5 +305,8 @@ void yyerror(char *s) {
 
 int main(void) {
     yyparse();
+    _finish();
     return 0;
+
+
 }
