@@ -143,20 +143,30 @@ func:
 _ID                                                  {reduction(1,"func:_ID");}
 ;
 
-exprs:
-expr                                                 {reduction(1,"exprs:expr");}
-| expr COMMA exprs                                   {reduction(3,"exprs:expr COMMA exprs");}
-;
-
 expr:
 const                                               {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:const");}
 | var                                               {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:var");}
-| expr op expr                                      {reduction(3,"expr:expr op expr");}
-| '(' expr ')'                                      {reduction(3,"expr:'(' expr ')'");}
+| expr op expr                                      {
+                                                    cur_type=$1.type;cur_width=$1.width;
+                                                    int T=newtemp(cur_type,cur_width);
+                                                    cur_name=getName(T);
+                                                    $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
+
+                                                    gen(op.name, $1.name, $3.name, cur_name);
+                                                    
+                                                    reduction(3,"expr:expr op expr");
+                                                    }
+| '(' expr ')'                                      {$$.name=$2.name;$$.type=$2.type;$$.width=$2.width;reduction(3,"expr:'(' expr ')'");}
 ;
 
 var:
-_ID                                                  {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:_ID");}
+_ID                                                 {
+                                                    cur_name=$1.name;
+                                                    cur_type=getType(lookup($1.name));
+                                                    cur_width=WIDTH[cur_type];
+                                                    $$.type=$1.type;$$.width=$1.width;
+                                                    reduction(1,"var:_ID");
+                                                    }
 | array_var                                          {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:array_var");}
 ;
 
@@ -172,13 +182,13 @@ _ID '[' expr ']'                                    {
                                                     
                                                     int T1=newtemp($3.type,$3.width);
                                                     gen("*",$3.name,"4",getName(T1));
-                                                    int array_begin=getPlace(lookup($1.name));
+                                                    int array_begin=getAddr(lookup($1.name));
                                                     char *temp = (char *)malloc(10 * sizeof(char));
                                                     itoa(array_begin, temp, 10);
                                                     int T2=newtemp(__INTEGER__,WIDTH[__INTEGER__]);
                                                     
                                                     gen(":=", temp, NULL, getName(T2));
-                                                    gen("=[]", mystrcat(mystrcat(getName[T2],"["),mystrcat(getName(T1),"]")),NULL,cur_name);
+                                                    gen("=[]", _strcat(_strcat(getName[T2],"["),_strcat(getName(T1),"]")),NULL,cur_name);
                                                     
                                                     reduction(4,"array_var:_ID [ expr ]");
                                                     }
@@ -223,7 +233,7 @@ LT                                                   {$$.name=$1.name;reduction(
 int:
 POS_INT                                              {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"int:POS_INT");}
 | '0'                                                {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"int:0");}
-| MI POS_INT                                         {$$.name=mystrcat("-",$1.name);$$.type=$1.type;$$.width=$1.width;reduction(2,"int:MI POS_INT");}
+| MI POS_INT                                         {$$.name=_strcat("-",$1.name);$$.type=$1.type;$$.width=$1.width;reduction(2,"int:MI POS_INT");}
 ;
 
 %%
