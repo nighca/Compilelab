@@ -36,3 +36,25 @@ char* _strcat(const char *s1, const char *s2) {
     tempstr[len1+len2] = '\0';
     return tempstr;
 }
+
+
+char* _itoa(int n) {
+    char *tempstr = (char *)malloc(10 * sizeof(char));
+    int i;
+    for (i = 0; ; i++) {
+        tempstr[i] = '0' + n % 10;
+        n /= 10;
+        if (n == 0 || i == 8) {
+            int j;
+            for (j = 0; j <= i / 2; j++) {
+                char t = tempstr[j];
+                tempstr[j] = tempstr[i-j];
+                tempstr[i-j] = t;
+            }
+            tempstr[i+1] = '\0';
+            break;
+        }
+    }
+
+    return tempstr;
+}
