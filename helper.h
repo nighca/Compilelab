@@ -120,7 +120,7 @@ static void _init() {
 }
 
 static void _finish() {
-    __file__ = fopen("中间代码.txt", "w");
+    __file__ = fopen("result.txt", "w");
     int i;
     for (i = 0; i < __quadTop__; i++) {
         fprintf(__file__, "%d: %s %s %s %s\n", i, __quad__[i].op, __quad__[i].arg1, __quad__[i].arg2, __quad__[i].result);

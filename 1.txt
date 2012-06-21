@@ -1,6 +1,24 @@
-PROGRAM simplest;
-BEGIN
+PROGRAM test1;
 
-    a := 1 + 1;
+CONST cccc = 0;
+INTEGER:a, b, c, f[10];
+REAL:d;
+BOOLEAN:e;
+
+BEGIN
+    a := 5;
+    b := f[3] + a;
+    c := 0;
     
+    e := TRUE;
+    d := 2.0;
+    
+    IF e THEN a := (b + c) / d + a; ELSE d := 1.0;
+
+    a := a * c;
+    
+    WHILE  a>0  DO a := a - 1;
+    
+    c := a;
+	
 END

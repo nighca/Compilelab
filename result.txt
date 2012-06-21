@@ -1,0 +1,14 @@
+0: = 10 (null) num
+1: := 0 (null) sum
+2: := 0 (null) i
+3: < i num T4
+4: j= T4 FALSE 13
+5: * i 4 T6
+6: := 12 (null) T7
+7: =[] T7[T6] (null) T5
+8: + sum T5 T8
+9: := T8 (null) sum
+10: + i 1 T9
+11: := T9 (null) i
+12: j (null) (null) 3
+13: := 0 (null) i

@@ -121,21 +121,21 @@ sen                                                  {reduction(1,"sens:sen");}
 ;
 
 sen:
-_sen SEMI                                           {$$.next=$1.next;printf("sen.next: %d", $$.next);reduction(2,"sen:_sen SEMI");}
+_sen SEMI                                           {$$.next=$1.next;reduction(2,"sen:_sen SEMI");}
 
-| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);}
+| _IF expr                                          {new_dest_to=gen("j=", $2.name, "FALSE", NULL);}
     _THEN sen                                       {new_dest_to2=gen("j",NULL,NULL,NULL);}
     _ELSE sen                                       {
                                                     $$.next=$8.next;
-                                                    printf("sen.next: %d %d %d %d %d %d %d %d\n", $1.next, $2.next, $3.next, $4.next, $5.next, $6.next, $7.next, $8.next);
-                                                    printf("new_dest_to: %d %d\n", new_dest_to, new_dest_to2);
+                                                    //printf("sen.next: %d %d %d %d %d %d %d %d\n", $1.next, $2.next, $3.next, $4.next, $5.next, $6.next, $7.next, $8.next);
+                                                    //printf("new_dest_to: %d %d\n", new_dest_to, new_dest_to2);
                                                     setResult(new_dest_to, _itoa($5.next+1));
                                                     setResult(new_dest_to2, _itoa($$.next));
                                                     reduction(6,"sen:_IF expr _THEN sen _ELSE sen");}
 | _WHILE                                            {while_begin_from=getQuadTop();}
     expr                                            {
-                                                    printf("while_expr: %s\n", $3.name);
-                                                    new_dest_to=gen("j<>", $3.name, "TRUE", NULL);}
+                                                    //printf("while_expr: %s\n", $3.name);
+                                                    new_dest_to=gen("j=", $3.name, "FALSE", NULL);}
     _DO sen	                                        {
                                                     $$.next=gen("j",NULL,NULL,_itoa(while_begin_from+1))+1;
                                                     setResult(new_dest_to, _itoa($$.next));
@@ -145,7 +145,7 @@ _sen SEMI                                           {$$.next=$1.next;printf("sen
 ;
 
 _sen:
-var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;printf("_sen.next: %d", $$.next);
+var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;
                                                     reduction(3,"_sen:var ASSIGN expr");}
 | _READ _ID	                                        {reduction(2,"_sen:_READ _ID");}
 | _WRITE expr	                                    {reduction(2,"_sen:_WRITE expr");}
@@ -155,13 +155,13 @@ var ASSIGN expr                                     {$$.next=gen(":=", $3.name, 
 expr:
 const                                               {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:const");}
 | var                                               {
-                                                    $$.name=$1.name;printf("expr: %s\n", $$.name);$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:var");}
+                                                    $$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"expr:var");}
 | expr op expr                                      {
                                                     cur_type=$1.type;cur_width=$1.width;
                                                     int T=newtemp(cur_type,cur_width);
                                                     cur_name=getName(T);
                                                     $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
-                                                    printf("expr: %s\n", $$.name);
+                                                    
                                                     gen($2.name, $1.name, $3.name, cur_name);
 
                                                     reduction(3,"expr:expr op expr");
@@ -175,7 +175,7 @@ _ID                                                 {
                                                     cur_type=getType(lookup($1.name));
                                                     cur_width=WIDTH[cur_type];
                                                     $$.name=cur_name;$$.type=cur_type;$$.width=cur_width;
-                                                    printf("var: %s\n", $$.name);
+                                                    //printf("var: %s\n", $$.name);
                                                     reduction(1,"var:_ID");
                                                     }
 | array_var                                         {$$.name=$1.name;$$.type=$1.type;$$.width=$1.width;reduction(1,"var:array_var");}

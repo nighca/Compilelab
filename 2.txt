@@ -1,23 +1,17 @@
-PROGRAM test1;
+PROGRAM test2;
 
-CONST cccc = 0;
-INTEGER:a, b, c;
-REAL:d;
-BOOLEAN:e;
+CONST num = 10;
+INTEGER:i, sum, f[10];
 
 BEGIN
-    a := 5;
-    c := 0;
-    
-    e := TRUE;
-    d := 2.0;
-    
-    IF e THEN a := (b + c) / d + a; ELSE d := 1.0;
+    sum := 0;
+    i := 0;
 
-    a := a * c;
-    
-    WHILE  a>0  DO a := a - 1;
-    
-    c := a;
+    WHILE i < num 
+    DO BEGIN 
+        sum := sum + f[i];
+        i := i + 1;
+    END
 	
+    i := 0;
 END
