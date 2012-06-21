@@ -3,16 +3,22 @@ PROGRAM test1;
 CONST cccc = 0;
 INTEGER:a, b, c;
 REAL:d;
-BOOLEAN:ok;
+BOOLEAN:e;
 
 BEGIN
     a := 5;
     c := 0;
-    d := 3.5;
-    ok := TRUE;
-    IF ok THEN a := (b + c) / d + a;
+    
+    e := TRUE;
+    
+    
+    IF e THEN a := (b + c) / d + a;
+    ELSE a := 3;
 
-    FOR i := 1 TO 10 DO
-        d := d * c;
-
+    a := a * c;
+    
+    WHILE  a>0  DO a := a - 1;
+    
+    c := a;
+	
 END

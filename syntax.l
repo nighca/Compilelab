@@ -29,8 +29,8 @@ PROGRAM                     {Moveinto(yytext);return _PROGRAM;}
 BEGIN                       {Moveinto(yytext);return _BEGIN;}
 END                         {Moveinto(yytext);return _END;}
 CONST                       {Moveinto(yytext);return _CONST;}
-TRUE                        {yylval.name = yytext; yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TRUE;}
-FALSE                       {yylval.name = yytext; yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _FALSE;}
+TRUE                        {yylval.name = _strcat(yytext,""); yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TRUE;}
+FALSE                       {yylval.name = _strcat(yytext,""); yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _FALSE;}
 ARRAY                       {Moveinto(yytext);return _ARRAY;}
 IF                          {Moveinto(yytext);return _IF;}
 THEN                        {Moveinto(yytext);return _THEN;}
@@ -69,30 +69,30 @@ func                        {Moveinto(yytext);return _FUNC;}
 \;                           {Moveinto(yytext);return SEMI;}
 \,                           {Moveinto(yytext);return COMMA;}
 
-[+]                           {Moveinto(yytext);return PL;}
-[-]                           {Moveinto(yytext);return MI;}
-[*]                           {Moveinto(yytext);return MU;}
-[/]                           {Moveinto(yytext);return DI;}
+[+]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return PL;}
+[-]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return MI;}
+[*]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return MU;}
+[/]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return DI;}
 
-AND                         {Moveinto(yytext);return AND;}
-OR                          {Moveinto(yytext);return OR;}
-NOT                         {Moveinto(yytext);return NOT;}
+AND                         {yylval.name = _strcat(yytext,"");Moveinto(yytext);return AND;}
+OR                          {yylval.name = _strcat(yytext,"");Moveinto(yytext);return OR;}
+NOT                         {yylval.name = _strcat(yytext,"");Moveinto(yytext);return NOT;}
 
-[<]                           {Moveinto(yytext);return LT;}
-\<\=                          {Moveinto(yytext);return LE;}
-[=]{2}                           {Moveinto(yytext);return EQ;}
-\<\>                          {Moveinto(yytext);return LG;}
-\>\=                          {Moveinto(yytext);return GE;}
-[>]                           {Moveinto(yytext);return GT;}
+[<]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return LT;}
+\<\=                          {yylval.name = _strcat(yytext,"");Moveinto(yytext);return LE;}
+[=]{2}                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return EQ;}
+\<\>                          {yylval.name = _strcat(yytext,"");Moveinto(yytext);return LG;}
+\>\=                          {yylval.name = _strcat(yytext,"");Moveinto(yytext);return GE;}
+[>]                           {yylval.name = _strcat(yytext,"");Moveinto(yytext);return GT;}
 
-INTEGER                     {yylval.name = yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return _TYPE;}
-REAL                        {yylval.name = yytext;yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _TYPE;}
-BOOLEAN                     {yylval.name = yytext;yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TYPE;}
-[a-zA-Z][a-zA-Z0-9]*        {yylval.name = yytext; Moveinto(yytext);return _ID;}
-[0-9]*\.[0-9]+              {yylval.name = yytext;yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _REAL;}
-[1-9][0-9]*                 {yylval.name = yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return POS_INT;}
-0                           {yylval.name = yytext;yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return *yytext;}
-[()\[\]]                        {yylval.name = yytext;Moveinto(yytext);return *yytext;}
+INTEGER                     {yylval.name = _strcat(yytext,"");yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return _TYPE;}
+REAL                        {yylval.name = _strcat(yytext,"");yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _TYPE;}
+BOOLEAN                     {yylval.name = _strcat(yytext,"");yylval.type = __BOOLEAN__;yylval.width=WIDTH[__BOOLEAN__];Moveinto(yytext);return _TYPE;}
+[a-zA-Z][a-zA-Z0-9]*        {yylval.name = _strcat(yytext,"");Moveinto(yytext);return _ID;}
+[0-9]*\.[0-9]+              {yylval.name = _strcat(yytext,"");yylval.type = __REAL__;yylval.width=WIDTH[__REAL__];Moveinto(yytext);return _REAL;}
+[1-9][0-9]*                 {yylval.name = _strcat(yytext,"");yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return POS_INT;}
+0                           {yylval.name = _strcat(yytext,"");yylval.type = __INTEGER__;yylval.width=WIDTH[__INTEGER__];Moveinto(yytext);return *yytext;}
+[()\[\]]                        {yylval.name = _strcat(yytext,"");Moveinto(yytext);return *yytext;}
 
 
 [ \t\n]                    {				}
@@ -101,8 +101,8 @@ BOOLEAN                     {yylval.name = yytext;yylval.type = __BOOLEAN__;yylv
 %%
 
 void Moveinto(char * buff) {
-    printf("%d", num);
-    printf("----> Move into %s\n", cur);
+    //printf("%d", num);
+    //printf("----> Move into %s\n", cur);
 
     if (cur!=NULL)
         push(cur);
