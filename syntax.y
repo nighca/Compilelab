@@ -121,18 +121,15 @@ sen                                                  {reduction(1,"sens:sen");}
 ;
 
 sen:
-_sen SEMI                                           {$$.next=$1.next;reduction(2,"sen:_sen SEMI");}
-| _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);
-                                                    }
-    _THEN sen                                       {
-                                                    $$.next=getQuadTop()+1;
-                                                    setResult(new_dest_to, _itoa($$.next));
-                                                    reduction(4,"sen:_IF expr _THEN sen");}
+_sen SEMI                                           {$$.next=$1.next;printf("sen.next: %d", $$.next);reduction(2,"sen:_sen SEMI");}
+
 | _IF expr                                          {new_dest_to=gen("j<>", $2.name, "TRUE", NULL);}
     _THEN sen                                       {new_dest_to2=gen("j",NULL,NULL,NULL);}
     _ELSE sen                                       {
-                                                    $$.next=$6.next;
-                                                    setResult(new_dest_to, _itoa($4.next));
+                                                    $$.next=$8.next;
+                                                    printf("sen.next: %d %d %d %d %d %d %d %d\n", $1.next, $2.next, $3.next, $4.next, $5.next, $6.next, $7.next, $8.next);
+                                                    printf("new_dest_to: %d %d\n", new_dest_to, new_dest_to2);
+                                                    setResult(new_dest_to, _itoa($5.next+1));
                                                     setResult(new_dest_to2, _itoa($$.next));
                                                     reduction(6,"sen:_IF expr _THEN sen _ELSE sen");}
 | _WHILE                                            {while_begin_from=getQuadTop();}
@@ -148,10 +145,11 @@ _sen SEMI                                           {$$.next=$1.next;reduction(2
 ;
 
 _sen:
-var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;
+var ASSIGN expr                                     {$$.next=gen(":=", $3.name, NULL, $1.name)+1;printf("_sen.next: %d", $$.next);
                                                     reduction(3,"_sen:var ASSIGN expr");}
 | _READ _ID	                                        {reduction(2,"_sen:_READ _ID");}
 | _WRITE expr	                                    {reduction(2,"_sen:_WRITE expr");}
+|
 ;
 
 expr:
@@ -267,22 +265,28 @@ void reduction(int arg_num, char *s) {
     //printf("%d", num);
 
     //print_stack();
-    printf("----> reduction %s\n", s);
+    //printf("----> reduction %s\n", s);
 
     int i;
     for(i=0; i<arg_num; i++)
         pop();
 
+    
+
     char *new_p = state[state_num];
     state_num++;
 
+    /*
     int j=0;
     while(s[j]!=':'){
         new_p[j]=s[j];j++;
     }
     new_p[j]='\0';
 
+    printf("finish2\n");
+
     push(new_p);
+    */
 }
 
 

@@ -10,10 +10,9 @@ BEGIN
     c := 0;
     
     e := TRUE;
+    d := 2.0;
     
-    
-    IF e THEN a := (b + c) / d + a;
-    ELSE a := 3;
+    IF e THEN a := (b + c) / d + a; ELSE d := 1.0;
 
     a := a * c;
     
